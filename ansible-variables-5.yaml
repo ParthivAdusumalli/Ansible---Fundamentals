@@ -1,0 +1,18 @@
+- name: Play-1 Started
+  hosts: local
+  connection: local
+  vars_prompt:
+  - name: Number1
+    prompt: Please enter Number-1
+  - name: Number2
+    prompt: Please enter Number-2
+  tasks: 
+  - name: Addition of Two Numbers
+    ansible.builtin.debug:
+      msg: Addition Of Given two Numbers-{{ Number1 | int + Number2 | int }}
+  - name: Subtraction Of two numbers
+    ansible.builtin.debug:
+      msg: Subtraction Of Given two Numbers-{{ Number1 | int + Number2 | int }}
+  - name: Multiplication Of two numbers
+    ansible.builtin.debug:
+      msg: Multiplication Of Given two Numbers-{{ Number1 | int + Number2 | int }}
