@@ -1,0 +1,18 @@
+- name: Ansible Playbook To Install, Start, and Enable Nginx
+  hosts: webServers
+  become: yes
+  tasks:
+    - name: Installation of Nginx Started
+      ansible.builtin.package: 
+        name: nginx
+        state: present
+
+    - name: Starting the Nginx Service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+
+    - name: Enabling the Service So that You Don't Need to Start the Service After Server Boot
+      ansible.builtin.service:
+        name: nginx
+        enabled: yes
