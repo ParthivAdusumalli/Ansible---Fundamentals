@@ -4,15 +4,17 @@
   vars_prompt:
   - name: Number1
     prompt: Please enter Number-1
+    private: false
   - name: Number2
     prompt: Please enter Number-2
+    private: false
   tasks: 
   - name: Addition of Two Numbers
     ansible.builtin.debug:
       msg: Addition Of Given two Numbers-{{ Number1 | int + Number2 | int }}
   - name: Subtraction Of two numbers
     ansible.builtin.debug:
-      msg: Subtraction Of Given two Numbers-{{ Number1 | int + Number2 | int }}
+      msg: Subtraction Of Given two Numbers-{{ Number1 | int - Number2 | int }}
   - name: Multiplication Of two numbers
     ansible.builtin.debug:
-      msg: Multiplication Of Given two Numbers-{{ Number1 | int + Number2 | int }}
+      msg: Multiplication Of Given two Numbers-{{ Number1 | int * Number2 | int }}
