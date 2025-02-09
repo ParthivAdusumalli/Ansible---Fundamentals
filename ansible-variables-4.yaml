@@ -7,3 +7,12 @@
   - name: Task-1 of Play-1 Started
     ansible.builtin.debug:
       msg: Hello Printing Variables from a file. {{ var1 }},{{ var2 }}
+- name: Play-2 Started
+  hosts: local
+  connection: local
+  vars_files:
+  - VariablesFile.txt
+  tasks: 
+  - name: Task-1 of Play-2 Started
+    ansible.builtin.debug:
+      msg: Hello Printing Variables from a file from Play-2. {{ var1 }},{{ var2 }}
