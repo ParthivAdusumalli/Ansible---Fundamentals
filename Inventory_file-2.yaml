@@ -1,0 +1,3 @@
+[webServers]
+10.1.2.19 variable1="hello" variable2="world" ansible_user=ec2-user --private-key=key.pem
+localhost variable1="hi" variable2="All" ansible_user=ec2-user --private-key=key.pem

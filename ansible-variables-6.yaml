@@ -1,0 +1,6 @@
+- name: Play-1
+  hosts: webServers
+  tasks: 
+  - name: Task 1 of Play-1 started
+    ansible.builtin.debug:
+      msg: {{ variable1 }} {{ variable2 }}
