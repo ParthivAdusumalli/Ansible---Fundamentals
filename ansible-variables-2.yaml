@@ -1,0 +1,20 @@
+- name: practising variables in ansible--Play-1 Started
+  hosts: local
+  connection: local
+  vars: #Accessed For all below Tasks but not for other play
+    NAME: PARTHIV
+    AGE: 24
+    Current_technology: DevOps and Cloud
+  tasks:
+    - name: Say hello
+      vars:
+      ansible.builtin.debug:
+        msg: Hey Hi {{ NAME }} Your age-{{ AGE }} You are currently learning-{{ Current_technology }}
+
+- name: Play 2 Started Trying to access variables of Play-1
+  hosts: local
+  connection: local
+  tasks:
+  - name: Started Task-1 Play-2
+    ansible.builtin.debug:
+      msg: Trying to access variables of First play- #{{ NAME }} Printing this Variable returns error.

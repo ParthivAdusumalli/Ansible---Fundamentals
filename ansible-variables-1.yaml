@@ -1,0 +1,16 @@
+- name: practising variables in ansible
+  hosts: local
+  connection: local
+  vars: #Accessed For all below Tasks
+    NAME: PARTHIV
+    AGE: 24
+    Current_technology: DevOps and Cloud
+  tasks:
+    - name: Say hello
+      vars:
+        LOCAL: LOCALMessage #Local scope for Only Current task
+      ansible.builtin.debug:
+        msg: Hey Hi {{ NAME }} Your age-{{ AGE }} You are currently learning-{{ Current_technology }}
+    - name: AnotherTask Starts #LOCAL Variable cant be accessed here 
+      ansible.builtin.debug:
+        msg: Hello Again #If you print {{ LOCAL }}, It will return Error

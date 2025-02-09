@@ -1,0 +1,14 @@
+- name: Play-1 Started
+  hosts: local
+  connection: local
+  tasks:
+  - name: Task-1 Of Play-1 started
+    ansible.builtin.set_fact:
+      GREETING: Hello from Task-1 of Play-1
+- name: Play-2 Started
+  hosts: local
+  connection: local
+  tasks:
+  - name: Task-1 of Play-1 started
+    ansible.builtin.debug:
+      msg: Hello Now printing variable of Play-1 {{ GREETING }}
