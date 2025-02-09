@@ -2,7 +2,7 @@
   hosts: local
   connection: local
   vars_files:
-  - VariablesFile.txt
+  - VariablesFile.yaml
   tasks: 
   - name: Task-1 of Play-1 Started
     ansible.builtin.debug:
@@ -11,7 +11,7 @@
   hosts: local
   connection: local
   vars_files:
-  - VariablesFile.txt
+  - VariablesFile.yaml
   tasks: 
   - name: Task-1 of Play-2 Started
     ansible.builtin.debug:
