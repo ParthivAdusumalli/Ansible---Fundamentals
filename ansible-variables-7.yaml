@@ -1,0 +1,7 @@
+- name: Play-1 Started
+  hosts: local
+  connection: local
+  tasks:
+  - name: Taking Variable Values from Command Line
+    ansible.builtin.debug:
+      msg: Priniting the Variables,{{ variable1 }} and {{variable2}}
