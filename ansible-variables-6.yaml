@@ -3,4 +3,4 @@
   tasks: 
   - name: Task 1 of Play-1 started
     ansible.builtin.debug:
-      msg: {{ variable1 }} {{ variable2 }}
+      msg: Hi Printing variables-{{ variable1 }} {{ variable2 }}
