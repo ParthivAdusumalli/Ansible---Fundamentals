@@ -40,7 +40,7 @@
 
     -   name: SUCCESS - Implemented DB Password
         ansible.builtin.debug:
-            msg: "Successfully implemented DB Password. Please check Stdout-{{ DBPassConfig.stdout }}"
+            msg: "Successfully implemented DB Password. Exit Status-{{ DBPassConfig.rc }}"
         when: DBPassConfig.rc == 0
 
     -   name: Checking the DB Connectivity
