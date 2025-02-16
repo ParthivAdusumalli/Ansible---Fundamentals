@@ -81,13 +81,10 @@
     ansible.builtin.systemd:
       daemon_reload: yes
 
-  - name: Starting Backend service
+  - name: Ensure backend service is running and enabled
     ansible.builtin.service:
       name: backend
       state: started
-  - name: Enabling the backend service
-    ansible.builtin.service:
-      name: backend
       enabled: true
 
   - name: Loading Mysql Schema
