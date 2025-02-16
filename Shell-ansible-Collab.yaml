@@ -1,0 +1,14 @@
+- name: Shell and Command Modules 
+  hosts: local
+  connection: local
+  tasks: 
+  - name: Shell Module
+    ansible.builtin.shell: bash script.sh &>/tmp/logs.log
+    args:
+      chdir: /home/ec2-user
+  - name: Command Module
+    ansible.builtin.command: ls -l 
+    register: Output
+  - name: Printing the Output
+    ansible.builtin.debug:
+      msg: "{{ Output }}"

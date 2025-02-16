@@ -1,0 +1,38 @@
+- name: WebServer Configuration Started
+  hosts: webServers
+  become: true
+  tasks: 
+  - name: Installing Nginx
+    ansible.builtin.package:
+      name: nginx
+      state: present
+  - name: Starting Nginx service.
+    ansible.builtin.service:
+      name: nginx
+      state: started
+  - name: Enabling Nginx service
+    ansible.builtin.service:
+      name: nginx
+      enabled: true
+  - name: Removing Nginx Defauly files.
+    ansible.builtin.file:
+      path: /usr/share/nginx/html/*
+      state: absent
+  - name: Downloading Source code
+    ansible.builtin.command: "curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip"
+  - name: Changing Directory to /usr/share/nginx/html 
+    ansible.builtin.command: "cd /usr/share/nginx/html"
+  - name: Unzipping Source code..
+    ansible.builtin.unarchive:
+      src: /tmp/frontend.zip
+      dest: /usr/share/nginx/html
+      remote_src: yes
+  - name: Configuring Nginx service
+    ansible.builtin.copy:
+      src: Nginx.conf
+      dest: /etc/nginx/default.d/expense.conf
+  - name: restarting Nginx service..
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
+

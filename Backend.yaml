@@ -1,0 +1,114 @@
+- name: Automating Application Server Configuration
+  hosts: AppServer
+  become: yes
+  vars_prompt:
+  - name: DBPass
+    prompt: Please enter DB password
+    private: false
+  tasks:
+  - name: Disabling the Node Version
+    ansible.builtin.command: "dnf module disable nodejs -y"
+    register: Status
+    ignore_errors: true
+
+  - name: Checking The Disabling Status
+    ansible.builtin.fail:
+      msg: "Failed to Disable the Node JS"
+    when: Status.rc != 0
+
+  - name: Enabling Node JS v20
+    ansible.builtin.command: "dnf module enable nodejs:20 -y"
+    register: Status
+    ignore_errors: true
+
+  - name: Checking The Enabling Status
+    ansible.builtin.fail:
+      msg: "Failed to Enable the Node JS v20"
+    when: Status.rc != 0
+
+  - name: Installing Node JS and Mysql
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: present
+    loop:
+    - nodejs
+    - mysql
+
+  - name: Add the user expense
+    ansible.builtin.user:
+      name: expense
+
+  - name: Create app Directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: Ensure /tmp/backend.zip exists
+    ansible.builtin.file:
+      path: /tmp/backend.zip
+      state: touch
+
+  - name: Installing Application Code
+    ansible.builtin.command: "curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip"
+    register: Status
+    ignore_errors: true
+
+  - name: Checking The application code installation status
+    ansible.builtin.fail:
+      msg: "Failed to Install application code {{ Status.stderr }}"
+    when: Status.rc != 0
+
+  - name: Extract archive
+    ansible.builtin.unarchive:
+      src: /tmp/backend.zip
+      dest: /app
+      remote_src: yes
+
+  - name: Changing Directory to /app
+    ansible.builtin.command: "cd /app"
+
+  - name: Install npm packages globally
+    community.general.npm:
+      name: npm
+      global: yes
+
+  - name: copy backend service
+    ansible.builtin.copy:
+      src: backend.service
+      dest: /etc/systemd/system/backend.service
+
+  - name: Reload systemd daemon
+    ansible.builtin.systemd:
+      daemon_reload: yes
+
+  - name: Starting Backend service
+    ansible.builtin.service:
+      name: backend
+      state: started
+  - name: Enabling the backend service
+    ansible.builtin.service:
+      name: backend
+      enabled: true
+
+  - name: Loading Mysql Schema
+    ansible.builtin.command: "mysql -h 10.1.2.55 -uroot -p{{ DBPass }} -e 'source /app/schema/backend.sql'"
+    register: Status
+    ignore_errors: true
+
+  - name: Checking Schema status
+    ansible.builtin.fail:
+      msg: Failed To add Schema
+    when: Status.rc != 0
+
+  - name: Restart service backend, in all cases
+    ansible.builtin.service:
+      name: backend
+      state: restarted
+
+  - name: Gathering service facts
+    ansible.builtin.service_facts:
+
+  - name: Check if backend.service is running
+    debug:
+      msg: "Backend is running. SUCCESSFULLY IMPLEMENTED APP SERVER"
+    when: ansible_facts.services['backend.service'].state == 'running'

@@ -1,0 +1,13 @@
+- name: Install And Uninstall Packages
+  hosts: local
+  become: yes
+  connection: local
+  tasks:
+  - name: Task 1 Of play 1 Started
+    ansible.builtin.package:
+      name: "{{ item.PackageName }}"
+      state: "{{ item.status }}"
+    loop:
+    - { PackageName: 'git', status: 'absent' }
+    - { PackageName: 'cronie', status: 'present' }
+    - { PackageName: 'nginx', status: 'absent' }

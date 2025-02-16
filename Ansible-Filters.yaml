@@ -1,0 +1,55 @@
+- name: Using Filters in Ansible
+  hosts: local
+  connection: local
+  tasks:
+  - name: Using Default Variable Naming
+    ansible.builtin.debug:
+      msg: Hello I am learning {{ courseName | default("Ansible") }}
+  - name: Discovering the Variable type
+    vars:
+      Variable1: StringType
+      Variable2: 23
+      Variable3: true
+      Variable4:
+      - value1
+      - value2
+      - value3
+      Variable5:
+        key1: "Value1"
+        key2: "Value2"
+      Variable6: 0.5
+    ansible.builtin.debug:
+      msg: "{{ Variable1 | type_debug }}, {{ Variable2 | type_debug }}, {{ Variable3 | type_debug }}, {{ Variable4 | type_debug }}, {{ Variable5 | type_debug }}, {{Variable6 | type_debug }}"
+  - name: Converting String To list using Split operator
+    vars: 
+      fruits: "Apple,Orange,Guava"
+    ansible.builtin.debug:
+      msg: "{{ fruits | split(',') }}"
+  - name: Coverting Dictionaries to List
+    vars:
+      MyDict: 
+        Application: Govt
+        Payment: Online
+    ansible.builtin.debug: # Dictionaries will be printed in Curly braces
+      msg: "{{ MyDict | dict2items }}"
+  - name: Converting List to Dictionaries
+    vars:
+     MyList:
+     -  key: "ApplicationType"
+        value: "Govt"
+     -  key: "Payment Mode"
+        value: "Online"
+    ansible.builtin.debug:
+      msg: "{{ MyList | items2dict }}" # we have already discussed Upper to lower and Lower to upper case conversion
+  - name: Printing Min and Max from a list
+    vars:
+      List1: [20,18,56,45,32]
+    ansible.builtin.debug:
+      msg: Min number is-{{ List1 | min }}, Max number is-{{ List1 | max }}
+  - name: Checking if the IP address is valid
+    vars:
+      MyIp1: 23.67.76.98
+      MyIp2: 877.75.87.34
+      MyIp3: 10.1.3.0/24
+    ansible.builtin.debug: # Prints the IP address if the IP was correct and prints false if IP was not valid 
+      msg: "{{ MyIp1 | ansible.utils.ipaddr }}, {{ MyIp2 | ansible.utils.ipaddr }}, {{ MyIp3 | ansible.utils.ipaddr }}"

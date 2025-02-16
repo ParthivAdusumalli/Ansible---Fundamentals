@@ -1,0 +1,16 @@
+- name: Task 1 Started
+  hosts: local
+  connection: local
+  vars:
+    ListOfItems:
+      - Item1
+      - Item2
+      - Item3
+      - Item1
+  tasks:
+    - name: Remove duplicates and convert back to list
+      ansible.builtin.set_fact:
+        my_set: "{{ ListOfItems | unique | list }}"  
+    - name: 
+      ansible.builtin.debug:
+        msg: Printing Set Datatype-{{ my_set }}

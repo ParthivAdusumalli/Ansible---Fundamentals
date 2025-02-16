@@ -1,0 +1,15 @@
+- name: Install Nginx Only on Ubuntu/Debian Type
+  hosts: webServers
+  vars:
+    OSFamily: "{{ ansible_facts['os_family'] }}"
+    IPAddress: "{{ ansible_facts['default_ipv4']['address'] }}"
+  tasks:
+  - name: Installation of Nginx Started
+    ansible.builtin.apt:
+      name: nginx
+      state: present
+    when: OSFamily == 'Debian'
+  - name: Task 2 of Play 2 Started.
+    ansible.builtin.debug:
+      msg: Skipping the Nginx Installation on {{ IPAddress }}
+    when: OSFamily != 'Debian'

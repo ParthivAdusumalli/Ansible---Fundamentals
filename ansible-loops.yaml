@@ -1,0 +1,14 @@
+- name: Installing Nginx, Git, and Cronie using Loops
+  hosts: local
+  connection: local
+  become: yes  # Needed for package installation
+
+  tasks:
+  - name: Set of Tasks under a block
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: absent
+    loop:
+    - nginx
+    - git 
+    - cronie
