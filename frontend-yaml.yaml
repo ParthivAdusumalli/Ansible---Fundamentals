@@ -14,25 +14,46 @@
     ansible.builtin.service:
       name: nginx
       enabled: true
-  - name: Removing Nginx Defauly files.
+  - name: Removing Nginx Default files.
     ansible.builtin.file:
       path: /usr/share/nginx/html/*
       state: absent
   - name: Downloading Source code
     ansible.builtin.command: "curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip"
-  - name: Changing Directory to /usr/share/nginx/html 
-    ansible.builtin.command: "cd /usr/share/nginx/html"
+  
   - name: Unzipping Source code..
     ansible.builtin.unarchive:
       src: /tmp/frontend.zip
       dest: /usr/share/nginx/html
       remote_src: yes
+
+  - name: Gathering List of files from /usr/share/nginx/html
+    ansible.builtin.command: "ls -l /usr/share/nginx/html"
+    register: ListOfFiles
+
+  - name: Showing List of Files
+    ansible.builtin.debug:
+      msg: "{{ ListOfFiles.stdout }}"
+    
   - name: Configuring Nginx service
     ansible.builtin.copy:
       src: Nginx.conf
       dest: /etc/nginx/default.d/expense.conf
+
   - name: restarting Nginx service..
     ansible.builtin.service:
       name: nginx
       state: restarted
 
+  - name: Gathering service facts
+    ansible.builtin.service_facts:
+
+  - name: Nginx.service is Running 
+    ansible.builtin.debug:
+      msg: "Nginx is running. IMPLEMENTED Web SERVER"
+    when: ansible_facts.services['Nginx.service'].state == 'running'
+  
+  - name: Nginx Service Not Running
+    ansible.builtin.debug:
+      msg: "Nginx Failed to run. IMPLEMENTING Web SERVER failed"
+    when: ansible_facts.services['nginx.service'].state != 'running'

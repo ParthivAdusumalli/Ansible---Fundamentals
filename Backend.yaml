@@ -11,7 +11,7 @@
     register: Status
     ignore_errors: true
 
-  - name: Checking The Disabling Status
+  - name: Checking if Disabling Status Failed
     ansible.builtin.fail:
       msg: "Failed to Disable the Node JS"
     when: Status.rc != 0
@@ -21,7 +21,7 @@
     register: Status
     ignore_errors: true
 
-  - name: Checking The Enabling Status
+  - name: Checking if Enabling Status Failed
     ansible.builtin.fail:
       msg: "Failed to Enable the Node JS v20"
     when: Status.rc != 0
@@ -43,32 +43,34 @@
       path: /app
       state: directory
 
-  - name: Ensure /tmp/backend.zip exists
-    ansible.builtin.command: "touch /tmp/backend.zip"
-
   - name: Installing Application Code
     ansible.builtin.command: "curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip"
-    register: Status
-    ignore_errors: true
-
-  - name: Checking If Installation Failed
-    ansible.builtin.fail:
-      msg: "Failed to Install application code {{ Status.stderr }}"
-    when: Status.rc != 0
-  
-  - name: Changing Directory to /app
-    ansible.builtin.command: "cd /app"
-
 
   - name: Extract archive
-    ansible.builtin.command: unzip -o /tmp/backend.zip
- 
-  - name: Install npm packages globally
-    ansible.builtin.command: "npm install"
+    ansible.builtin.command: "unzip /tmp/backend.zip -d /app"
+
+  - name: Gathering List of files
+    ansible.builtin.command: "ls -l /app"
+    register: ListOfFiles
+
+  - name: Showing the files
+    ansible.builtin.debug:
+      msg: "{{ ListOfFiles }}"
+
+  - name: Install npm packages
+    ansible.builtin.command: "npm install --prefix /app" #Making Sure the npm installs at /app location
+
+  - name: Checking NPM Status
+    ansible.builtin.command: "npm --version"
+    register: versionCheck
+
+  - name: Showing the NPM version
+    ansible.builtin.debug:
+      msg: "{{ versionCheck }}"
 
   - name: copy backend service
     ansible.builtin.copy:
-      src: backend.service
+      src: /home/ec2-user/backend.service #Make sure this file Present at Ansible Control Node
       dest: /etc/systemd/system/backend.service
 
   - name: Reload systemd daemon
@@ -81,7 +83,7 @@
       enabled: true
 
   - name: Loading Mysql Schema
-    ansible.builtin.command: "mysql -h 10.1.2.89 -uroot -p{{ DBPass }} -e 'source /app/schema/backend.sql'"
+    ansible.builtin.command: "mysql -h 10.1.2.232 -uroot -p{{ DBPass }} -e 'source /app/schema/backend.sql'"
     register: Status
     ignore_errors: true
 
