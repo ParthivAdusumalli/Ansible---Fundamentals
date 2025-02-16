@@ -1,6 +1,5 @@
 -   name:  Automation Of MYSQL Setup
-    hosts: local
-    connection: local
+    hosts: DBServer
     become: yes
     vars_prompt:
     -   name: DBPass

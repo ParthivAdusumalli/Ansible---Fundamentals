@@ -1,5 +1,5 @@
 - name: WebServer Configuration Started
-  hosts: webServers
+  hosts: WebServer
   become: true
   tasks: 
   - name: Installing Nginx
