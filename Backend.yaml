@@ -44,33 +44,27 @@
       state: directory
 
   - name: Ensure /tmp/backend.zip exists
-    ansible.builtin.file:
-      path: /tmp/backend.zip
-      state: touch
+    ansible.builtin.command: "touch /tmp/backend.zip"
 
   - name: Installing Application Code
     ansible.builtin.command: "curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip"
     register: Status
     ignore_errors: true
 
-  - name: Checking The application code installation status
+  - name: Checking If Installation Failed
     ansible.builtin.fail:
       msg: "Failed to Install application code {{ Status.stderr }}"
     when: Status.rc != 0
-
-  - name: Extract archive
-    ansible.builtin.unarchive:
-      src: /tmp/backend.zip
-      dest: /app
-      remote_src: yes
-
+  
   - name: Changing Directory to /app
     ansible.builtin.command: "cd /app"
 
+
+  - name: Extract archive
+    ansible.builtin.command: unzip -o /tmp/backend.zip
+ 
   - name: Install npm packages globally
-    community.general.npm:
-      name: npm
-      global: yes
+    ansible.builtin.command: "npm install"
 
   - name: copy backend service
     ansible.builtin.copy:
@@ -78,8 +72,7 @@
       dest: /etc/systemd/system/backend.service
 
   - name: Reload systemd daemon
-    ansible.builtin.systemd:
-      daemon_reload: yes
+    ansible.builtin.command: "systemctl daemon-reload"
 
   - name: Ensure backend service is running and enabled
     ansible.builtin.service:
@@ -92,7 +85,7 @@
     register: Status
     ignore_errors: true
 
-  - name: Checking Schema status
+  - name: Check if Schema Failed.
     ansible.builtin.fail:
       msg: Failed To add Schema
     when: Status.rc != 0
@@ -105,7 +98,12 @@
   - name: Gathering service facts
     ansible.builtin.service_facts:
 
-  - name: Check if backend.service is running
+  - name: Check if backend.service is Running Successfully
     debug:
       msg: "Backend is running. SUCCESSFULLY IMPLEMENTED APP SERVER"
     when: ansible_facts.services['backend.service'].state == 'running'
+
+  - name: Check if backend.service is Failed
+    fail:
+      msg: "Backend is Failed. Failed to implement APP SERVER"
+    when: ansible_facts.services['backend.service'].state != 'running'
